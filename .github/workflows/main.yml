@@ -1,0 +1,51 @@
+name: CICD Demo
+on:
+  workflow_dispatch:
+jobs:
+  CI-CD:
+    runs-on: ubuntu-latest
+    permissions: 
+      packages: write
+    steps:
+        - name: Minikube
+          run: |
+            minikube start
+            minikube status
+            
+        - name: Checkout Code
+          uses: actions/checkout@v3
+
+        - name: Login to GitHub Container Registry
+          uses: docker/login-action@v2
+          with:
+            registry: ghcr.io
+            username: ${{github.actor}}
+            password: ${{ secrets.GITHUB_TOKEN}}
+            
+        - name: Build and Push Container Image to GitHub Container Registry
+          run:  |
+            docker build -t ghcr.io/${{github.actor}}/webapp:${{github.run_number}} .
+            docker push ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
+
+        - name: Kubernetes Deployment
+          run: |
+            sed -i 's/tag/${{github.run_number}}/' ./k8/test.yml
+            kubectl apply -f ./k8/test.yml
+            sleep 45
+            kubectl get pods -o wide
+
+        - name: Demo Test
+          run: |
+            kubectl describe deployment webapp-deployment
+            curl $(minikube service webapp-service --url)/
+            curl $(minikube service webapp-service --url)/name
+            
+        - name: Minikube Cleanup
+          run:  |
+            minikube stop
+            minikube delete
+             
+            
+            
+            
+        

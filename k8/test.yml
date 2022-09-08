@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: ghcr.io/nagrazg/webapp:tag
+        ports:
+        - containerPort: 3000
+        securityContext:
+         allowPrivilegeEscalation: false
+         privileged: false
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  selector:
+    app: webapp
+  type: NodePort
+  ports:
+  - port: 3000
+    targetPort: 3000
+    
+
+
+  
