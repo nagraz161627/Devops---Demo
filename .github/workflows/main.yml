@@ -32,13 +32,15 @@ jobs:
             sed -i 's/tag/${{github.run_number}}/' ./k8/test.yml
             kubectl apply -f ./k8/test.yml
             sleep 45
-            kubectl get pods -o wide
+            kubectl get deployment webapp-deployment
 
         - name: Demo Test
           run: |
-            kubectl describe deployment webapp-deployment
-            curl $(minikube service webapp-service --url)/
-            curl $(minikube service webapp-service --url)/name
+            kubectl get pods
+            echo " / Endpoint"
+            curl -s $(minikube service webapp-service --url)/
+            echo " /name Endpoint"
+            curl -s $(minikube service webapp-service --url)/name
             
         - name: Minikube Cleanup
           run:  |
