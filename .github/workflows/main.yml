@@ -26,6 +26,8 @@ jobs:
           run:  |
             docker build -t ghcr.io/${{github.actor}}/webapp:${{github.run_number}} .
             docker push ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
+            docker image ls
+            docker run --rm --name testdemo nagrazg/webapp:5
 
         - name: Kubernetes Deployment
           run: |
@@ -36,6 +38,8 @@ jobs:
 
         - name: Demo Test
           run: |
+            sleep 10
+            kubectl describe deployment webapp-deployment
             kubectl get pods
             echo " / Endpoint"
             curl -s $(minikube service webapp-service --url)/
