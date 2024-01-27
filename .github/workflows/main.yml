@@ -37,9 +37,8 @@ jobs:
             echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
             sudo apt-get update
             sudo apt-get install trivy
-            sleep 10
             trivy image --format sarif -o trivy-results.sarif  ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
-            sleep 10
+            
             
         - name: Upload Trivy scan results to GitHub Security tab
           uses: github/codeql-action/upload-sarif@v3
@@ -67,11 +66,11 @@ jobs:
 
         - name: Kubernetes Cleanup
           run:  |
-            kubectl get  --all
+            kubectl get all
             sleep 5
             kubectl delete deploy,svc --all 
             sleep 5
-            kubectl get  --all
+            kubectl get all
             
             
         - name: Minikube Cleanup
