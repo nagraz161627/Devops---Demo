@@ -38,7 +38,7 @@ jobs:
             sudo apt-get install trivy
             sleep 10
             trivy --help
-            trivy image -f table ${{github.actor}}/webapp:${{github.run_number}}
+            trivy image -f table ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
             sleep 10
 
         - name: Kubernetes Deployment
