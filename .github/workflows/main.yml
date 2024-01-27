@@ -37,12 +37,20 @@ jobs:
             sudo apt-get update
             sudo apt-get install trivy
             sleep 10
-            trivy --help
-            trivy image -f table ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
+            trivy image --format sarif -o trivy-results.sarif  ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
             sleep 10
+        - name: Upload Trivy scan results to GitHub Security tab
+          uses: actions/upload-artifact@v4
+          with:
+            name: Scan Results
+            path: trivy-results.sarif
+            
+            
 
         - name: Kubernetes Deployment
           run: |
+            sleep 10
+            sudo apt-get remove trivy
             sed -i 's/tag/${{github.run_number}}/' ./k8/test.yml
             kubectl apply -f ./k8/test.yml
             sleep 45
