@@ -27,7 +27,7 @@ jobs:
             docker build -t ghcr.io/${{github.actor}}/webapp:${{github.run_number}} .
             docker push ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
             docker image ls
-            docker run --rm --name testdemo nagrazg/webapp:5
+            
 
         - name: Kubernetes Deployment
           run: |
