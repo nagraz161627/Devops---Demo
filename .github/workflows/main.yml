@@ -27,7 +27,19 @@ jobs:
             docker build -t ghcr.io/${{github.actor}}/webapp:${{github.run_number}} .
             docker push ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
             docker image ls
-            
+
+        - name: Trivy Image Scan
+          run:  |
+            echo "Trivy Install"
+            sudo apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+            echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo apt-get update
+            sudo apt-get install trivy
+            sleep 10
+            trivy --help
+            trivy image -f table ${{github.actor}}/webapp:${{github.run_number}}
+            sleep 10
 
         - name: Kubernetes Deployment
           run: |
