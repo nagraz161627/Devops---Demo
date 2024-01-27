@@ -40,13 +40,10 @@ jobs:
             trivy image --format sarif -o trivy-results.sarif  ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
             sleep 10
         - name: Upload Trivy scan results to GitHub Security tab
-          uses: actions/upload-artifact@v4
+          uses: github/codeql-action/upload-sarif@v3
           with:
-            name: Scan Results
-            path: trivy-results.sarif
+            sarif_file: 'trivy-results.sarif'
             
-            
-
         - name: Kubernetes Deployment
           run: |
             sleep 10
