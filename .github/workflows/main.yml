@@ -40,6 +40,7 @@ jobs:
             sleep 10
             trivy image --format sarif -o trivy-results.sarif  ghcr.io/${{github.actor}}/webapp:${{github.run_number}}
             sleep 10
+            
         - name: Upload Trivy scan results to GitHub Security tab
           uses: github/codeql-action/upload-sarif@v3
           with:
@@ -63,6 +64,15 @@ jobs:
             curl -s $(minikube service webapp-service --url)/
             echo " /name Endpoint"
             curl -s $(minikube service webapp-service --url)/name
+
+        - name: Kubernetes Cleanup
+          run:  |
+            kubectl get  --all
+            sleep 5
+            kubectl delete deploy,svc --all 
+            sleep 5
+            kubectl get  --all
+            
             
         - name: Minikube Cleanup
           run:  |
